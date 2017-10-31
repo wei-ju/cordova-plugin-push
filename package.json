@@ -1,0 +1,27 @@
+{
+  "name": "cordova-plugin-push",
+  "version": "0.0.1",
+  "description": "Cordova push Plugin",
+  "cordova": {
+    "platforms": [
+      "android"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "keywords": [
+    "cordova",
+    "push",
+    "cordova-android"
+  ],
+  "engines": [
+    {
+      "name": "cordova-android",
+      "version": ">=4.0.0"
+    }
+  ],
+  "author": "whr",
+  "license": "Apache 2.0"
+}

@@ -1,0 +1,262 @@
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0" id="cordova-plugin-push" version="0.2.3" >
+	<name>sPush</name>
+	<preference name="JPUSH_API_KEY" default="" />
+	<preference name="XIAOMI_APP_ID" default=""/>
+	<preference name="XIAOMI_APP_KEY" default=""/>
+	<preference name="DDPUSH_APP_ID" default=""/>
+	<preference name="DDPUSH_SERVER_PORT" default=""/>
+	<preference name="DDPUSH_SERVER_ADDR" default=""/>
+
+	<engines>
+		<engine name="cordova" version=">=3.4.0"/>
+	</engines>
+	<js-module src="www/JPushPlugin.js" name="JPushPlugin">
+		<clobbers target="JPush" />
+	</js-module>
+	<js-module src="www/sPush.js" name="sPush">
+		<clobbers target="sPush" />
+	</js-module>
+	<platform name="android">
+		<config-file target="res/xml/config.xml" parent="/*">
+			<feature name="sPush">
+				<param name="android-package" value="org.apache.cordova.pushlib.PushManager"/>
+			</feature>
+		</config-file>
+		<!--小米相关-->
+		<config-file target="AndroidManifest.xml" parent="/manifest/application">
+			<meta-data android:name="xiaomi_appid" android:value="$XIAOMI_APP_ID" />
+		</config-file>
+		<config-file target="AndroidManifest.xml" parent="/manifest/application">
+			<meta-data android:name="xiaomi_appkey" android:value="$XIAOMI_APP_KEY" />
+		</config-file>
+		<!--ddpush相关-->
+		<config-file target="AndroidManifest.xml" parent="/manifest/application">
+			<meta-data android:name="ddpush_appid" android:value="$DDPUSH_APP_ID" />
+		</config-file>
+		<config-file target="AndroidManifest.xml" parent="/manifest/application">
+			<meta-data android:name="ddpush_server_prot" android:value="$DDPUSH_SERVER_PORT" />
+		</config-file>
+		<config-file target="AndroidManifest.xml" parent="/manifest/application">
+			<meta-data android:name="ddpush_server_addr" android:value="$DDPUSH_SERVER_ADDR" />
+		</config-file>
+		<config-file target="AndroidManifest.xml" parent="/manifest">
+			<!-- Required  Permission -->
+			<uses-permission android:name="android.permission.INTERNET" />
+			<uses-permission android:name="$PACKAGE_NAME.permission.JPUSH_MESSAGE" android:protectionLevel="signature" />
+			<uses-permission android:name="android.permission.RECEIVE_USER_PRESENT" />
+			<uses-permission android:name="android.permission.WRITE_SETTINGS" />
+			<uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
+			<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+			<uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+			<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+			<uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS" />
+			<uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
+			<uses-permission android:name="$PACKAGE_NAME.permission.MIPUSH_RECEIVE" />
+			<uses-permission android:name="android.permission.VIBRATE" />
+			<uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT" />
+			<uses-permission android:name="com.huawei.pushagent.permission.RICHMEDIA_PROVIDER" />
+			<uses-permission android:name="android.permission.READ_PHONE_STATE" />
+			<uses-permission android:name="android.permission.WAKE_LOCK" />
+			<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+			<uses-permission android:name="android.permission.GET_TASKS" />
+			<uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+			<permission android:name="$PACKAGE_NAME.permission.JPUSH_MESSAGE" android:protectionLevel="signature" />
+			<permission android:name="$PACKAGE_NAME.permission.MIPUSH_RECEIVE" android:protectionLevel="signature" />
+		</config-file>
+		<config-file target="AndroidManifest.xml" parent="/manifest/application">
+			<!--register Components-->
+			<service android:enabled="true" android:exported="false" android:name="com.evideo.push.service.DdpushService" />
+			<receiver android:enabled="true" android:exported="false" android:name="com.evideo.push.service.DdpushReceiver">
+				<intent-filter>
+					<action android:name="android.intent.action.BOOT_COMPLETED" />
+				</intent-filter>
+			</receiver>
+			<receiver android:enabled="true" android:exported="false" android:name="org.apache.cordova.pushlib.receivers.DdpushReceiver">
+				<intent-filter>
+					<action android:name="com.evideo.push.android.intent.MESSAGE" />
+				</intent-filter>
+			</receiver>
+			<activity android:exported="false" android:name="cn.jpush.android.ui.PopWinActivity" android:theme="@style/MyDialogStyle" />
+			<activity android:configChanges="orientation|keyboardHidden" android:exported="false" android:name="cn.jpush.android.ui.PushActivity" android:theme="@android:style/Theme.NoTitleBar">
+				<intent-filter>
+					<action android:name="cn.jpush.android.ui.PushActivity" />
+					<category android:name="android.intent.category.DEFAULT" />
+					<category android:name="$PACKAGE_NAME" />
+				</intent-filter>
+			</activity>
+			<service android:enabled="true" android:exported="false" android:name="cn.jpush.android.service.DownloadService" />
+			<service android:enabled="true" android:exported="false" android:name="cn.jpush.android.service.PushService">
+				<intent-filter>
+					<action android:name="cn.jpush.android.intent.REGISTER" />
+					<action android:name="cn.jpush.android.intent.REPORT" />
+					<action android:name="cn.jpush.android.intent.PushService" />
+					<action android:name="cn.jpush.android.intent.PUSH_TIME" />
+				</intent-filter>
+			</service>
+			<service android:enabled="true" android:exported="true" android:name="cn.jpush.android.service.DaemonService">
+				<intent-filter>
+					<action android:name="cn.jpush.android.intent.DaemonService" />
+					<category android:name="$PACKAGE_NAME" />
+				</intent-filter>
+			</service>
+			<receiver android:enabled="true" android:exported="false" android:name="cn.jpush.android.service.PushReceiver">
+				<intent-filter android:priority="1000">
+					<action android:name="cn.jpush.android.intent.NOTIFICATION_RECEIVED_PROXY" />
+					<category android:name="$PACKAGE_NAME" />
+				</intent-filter>
+				<intent-filter>
+					<action android:name="android.intent.action.USER_PRESENT" />
+					<action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+				</intent-filter>
+				<intent-filter>
+					<action android:name="android.intent.action.PACKAGE_ADDED" />
+					<action android:name="android.intent.action.PACKAGE_REMOVED" />
+					<data android:scheme="package" />
+				</intent-filter>
+			</receiver>
+			<receiver android:exported="false" android:name="cn.jpush.android.service.AlarmReceiver" />
+			<receiver android:enabled="true" android:exported="false" android:name="org.apache.cordova.pushlib.receivers.JPushReceiver">
+				<intent-filter>
+					<action android:name="cn.jpush.android.intent.REGISTRATION" />
+					<action android:name="cn.jpush.android.intent.UNREGISTRATION" />
+					<action android:name="cn.jpush.android.intent.MESSAGE_RECEIVED" />
+					<action android:name="cn.jpush.android.intent.NOTIFICATION_RECEIVED" />
+					<action android:name="cn.jpush.android.intent.NOTIFICATION_OPENED" />
+					<action android:name="cn.jpush.android.intent.ACTION_RICHPUSH_CALLBACK" />
+					<action android:name="cn.jpush.android.intent.CONNECTION" />
+					<category android:name="$PACKAGE_NAME" />
+				</intent-filter>
+			</receiver>
+			<meta-data android:name="JPUSH_CHANNEL" android:value="developer-default" />
+			<meta-data android:name="JPUSH_APPKEY" android:value="$JPUSH_API_KEY" />
+			<receiver android:name="org.apache.cordova.pushlib.receivers.HuaweiReceiver">
+				<intent-filter>
+					<action android:name="com.huawei.android.push.intent.REGISTRATION" />
+					<action android:name="com.huawei.android.push.intent.RECEIVE" />
+					<action android:name="com.huawei.android.push.intent.CLICK" />
+					<action android:name="com.huawei.intent.action.PUSH_STATE" />
+					<action android:name="com.huawei.android.push.plugin.RESPONSE" />
+				</intent-filter>
+				<meta-data android:name="CS_cloud_ablitity" android:value="successRateAnalytics" />
+			</receiver>
+			<receiver android:name="com.huawei.android.pushagent.PushEventReceiver" android:process=":pushservice">
+				<intent-filter>
+					<action android:name="com.huawei.android.push.intent.REFRESH_PUSH_CHANNEL" />
+					<action android:name="com.huawei.intent.action.PUSH" />
+					<action android:name="com.huawei.intent.action.PUSH_ON" />
+					<action android:name="com.huawei.android.push.PLUGIN" />
+				</intent-filter>
+				<intent-filter>
+					<action android:name="android.intent.action.PACKAGE_ADDED" />
+					<action android:name="android.intent.action.PACKAGE_REMOVED" />
+					<data android:scheme="package" />
+				</intent-filter>
+			</receiver>
+			<receiver android:name="com.huawei.android.pushagent.PushBootReceiver" android:process=":pushservice">
+				<intent-filter>
+					<action android:name="com.huawei.android.push.intent.REGISTER" />
+					<action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+				</intent-filter>
+				<meta-data android:name="CS_cloud_version" android:value="\u0032\u0037\u0030\u0035" />
+			</receiver>
+			<service android:name="com.huawei.android.pushagent.PushService" android:process=":pushservice" />
+			<activity android:configChanges="orientation|screenSize|locale|layoutDirection" android:name="com.huawei.android.pushselfshow.richpush.RichPushActivity" android:process=":pushservice" android:screenOrientation="portrait" android:theme="@style/hwpush_NoActionBar">
+				<meta-data android:name="hwc-theme" android:value="androidhwext:style/Theme.Emui" />
+				<intent-filter>
+					<action android:name="com.huawei.android.push.intent.RICHPUSH" />
+					<category android:name="android.intent.category.DEFAULT" />
+				</intent-filter>
+			</activity>
+			<activity android:configChanges="orientation|screenSize|locale|layoutDirection" android:exported="false" android:launchMode="singleTop" android:name="com.huawei.android.pushselfshow.permission.RequestPermissionsActivity" android:screenOrientation="portrait" android:theme="@android:style/Theme.DeviceDefault.Light.Dialog.NoActionBar" />
+			<service android:enabled="true" android:exported="false" android:name="com.xiaomi.push.service.XMJobService" android:permission="android.permission.BIND_JOB_SERVICE" android:process=":pushservice" />
+			<service android:enabled="true" android:name="com.xiaomi.push.service.XMPushService" android:process=":pushservice" />
+			<service android:enabled="true" android:exported="true" android:name="com.xiaomi.mipush.sdk.PushMessageHandler" />
+			<service android:enabled="true" android:name="com.xiaomi.mipush.sdk.MessageHandleService" />
+			<receiver android:exported="true" android:name="com.xiaomi.push.service.receivers.NetworkStatusReceiver">
+				<intent-filter>
+					<action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+					<category android:name="android.intent.category.DEFAULT" />
+				</intent-filter>
+			</receiver>
+			<receiver android:exported="false" android:name="com.xiaomi.push.service.receivers.PingReceiver" android:process=":pushservice">
+				<intent-filter>
+					<action android:name="com.xiaomi.push.PING_TIMER" />
+				</intent-filter>
+			</receiver>
+			<receiver android:exported="true" android:name="org.apache.cordova.pushlib.receivers.XiaoMiReceiver">
+				<intent-filter>
+					<action android:name="com.xiaomi.mipush.RECEIVE_MESSAGE" />
+				</intent-filter>
+				<intent-filter>
+					<action android:name="com.xiaomi.mipush.MESSAGE_ARRIVED" />
+				</intent-filter>
+				<intent-filter>
+					<action android:name="com.xiaomi.mipush.ERROR" />
+				</intent-filter>
+			</receiver>
+		</config-file>
+		<!--jpush so file-->
+		<source-file src="src/android/libs/arm64-v8a/libjpush219.so" target-dir="libs/arm64-v8a" />
+		<source-file src="src/android/libs/armeabi/libjpush219.so" target-dir="libs/armeabi" />
+		<source-file src="src/android/libs/armeabi-v7a/libjpush219.so" target-dir="libs/armeabi-v7a" />
+		<source-file src="src/android/libs/x86/libjpush219.so" target-dir="libs/x86" />
+		<source-file src="src/android/libs/x86_64/libjpush219.so" target-dir="libs/x86_64" />
+		<!--jar-->
+		<source-file src="src/android/libs/ddpush-sdk_1.1.jar" target-dir="libs" />
+		<source-file src="src/android/libs/jpush-android-2.1.9.jar" target-dir="libs" />
+		<source-file src="src/android/libs/HwPush_SDK_V2705.jar" target-dir="libs" />
+		<source-file src="src/android/libs/MiPush_SDK_Client_3_0_3.jar" target-dir="libs" />
+		<!--java-->
+		<!--receiver-->
+		<source-file src="src/android/src/receiver/HuaweiReceiver.java" target-dir="src/org/apache/cordova/pushlib/receivers" />
+		<source-file src="src/android/src/receiver/JPushReceiver.java" target-dir="src/org/apache/cordova/pushlib/receivers" />
+		<source-file src="src/android/src/receiver/XiaoMiReceiver.java" target-dir="src/org/apache/cordova/pushlib/receivers" />
+		<source-file src="src/android/src/receiver/DdpushReceiver.java" target-dir="src/org/apache/cordova/pushlib/receivers" />
+		<!--utils-->
+		<source-file src="src/android/src/utils/DeviceUtils.java" target-dir="src/org/apache/cordova/pushlib" />
+		<source-file src="src/android/src/utils/LOG.java" target-dir="src/org/apache/cordova/pushlib" />
+		<source-file src="src/android/src/utils/Md5Utility.java" target-dir="src/org/apache/cordova/pushlib" />
+		<source-file src="src/android/src/utils/AppUtils.java" target-dir="src/org/apache/cordova/pushlib" />
+		<!--插件实现-->
+		<source-file src="src/android/src/PushManager.java" target-dir="src/org/apache/cordova/pushlib" />
+		<!--xml-->
+		<source-file src="src/android/res/xml/hwpush_styles.xml" target-dir="res/values" />
+		<source-file src="src/android/res/xml/jpush_style.xml" target-dir="res/values" />
+		<!--gson-->
+		<framework src="com.google.code.gson:gson:2.7" />
+	</platform>
+	<platform name="ios">
+		 <config-file target="config.xml" parent="/*">
+            <feature name="sPush">
+                <param name="ios-package" value="JPushPlugin" />
+            </feature>
+        </config-file>
+
+        <header-file src="src/ios/Plugins/JPushPlugin.h" />
+        <source-file src="src/ios/Plugins/JPushPlugin.m" />
+
+        <header-file src="src/ios/lib/JPUSHService.h" />
+        <source-file src="src/ios/lib/jpush-ios-2.1.9.a" framework="true" />
+        <header-file src="src/ios/Plugins/AppDelegate+JPush.h" />
+        <source-file src="src/ios/Plugins/AppDelegate+JPush.m" />
+        <header-file src="src/ios/Plugins/OpenUDID.h" />
+        <source-file src="src/ios/Plugins/OpenUDID.m" />
+        <resource-file src="src/ios/PushConfig.plist" />
+        <framework src="CFNetwork.framework" weak="true" />
+        <framework src="CoreFoundation.framework" weak="true" />
+        <framework src="CoreTelephony.framework" weak="true" />
+        <framework src="SystemConfiguration.framework" weak="true" />
+        <framework src="CoreGraphics.framework" weak="true" />
+        <framework src="Foundation.framework" weak="true" />
+        <framework src="UIKit.framework" weak="true" />
+        <framework src="Security.framework" weak="true" />
+        <framework src="libz.tbd" weak="true" />
+        <framework src="AdSupport.framework" weak="true" />
+        <framework src="UserNotifications.framework" weak="true" />
+
+
+        <config-file target="*PushConfig.plist" parent="APP_KEY">
+            <string>$JPUSH_API_KEY</string>
+        </config-file>
+	</platform>
+</plugin>
