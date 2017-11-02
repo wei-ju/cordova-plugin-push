@@ -19,5 +19,17 @@
 >PLUGIN_PATH (String）
 
 ```
+### Build Setup
+Requires cordova 7+
+
+```bash
+# install depandency package
+npm install
+# install cordova environment
+npm install -g cordova
+# install push plugin
+./add_push_plugin.sh
+```
+
 ### 若想对插件进行修改可参照cordova官方提供的文档
 [http://cordova.apache.org/docs/en/latest/plugin_ref/spec.html](http://cordova.apache.org/docs/en/latest/plugin_ref/spec.html)
