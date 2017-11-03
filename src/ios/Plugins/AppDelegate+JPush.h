@@ -10,8 +10,8 @@
 #import <UserNotifications/UserNotifications.h>
 #import "JPUSHService.h"
 #define __appDelegate  ((AppDelegate *)[[UIApplication sharedApplication] delegate])
-@property (nonatomic, strong) NSString* token;
 
 @interface AppDelegate (JPush) <JPUSHRegisterDelegate>
+@property (nonatomic, strong) NSString* token;
 -(void)registerForIos10RemoteNotification;
 @end
