@@ -17,21 +17,28 @@
 @implementation AppDelegate (JPush)
 
 +(void)load{
-
+    
     Method origin;
     Method swizzle;
-
+    
     origin=class_getInstanceMethod([self class],@selector(init));
     swizzle=class_getInstanceMethod([self class], @selector(init_plus));
     method_exchangeImplementations(origin, swizzle);
+    
 }
 
--(instancetype)init_plus{
+-(instancetype)init_plus{    
+    [JPushPlugin registerForRemoteNotification];
+    
+    [JPUSHService setBadge:0];
+    [UIApplication sharedApplication].applicationIconBadgeNumber = 0;
+    
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidLaunch:) name:UIApplicationDidFinishLaunchingNotification object:nil];
     return [self init_plus];
 }
 
 -(void)applicationDidLaunch:(NSNotification *)notification{
+    
     if (notification) {
         [self registerForIos10RemoteNotification];
         [JPushPlugin setLaunchOptions:notification.userInfo];
@@ -39,8 +46,21 @@
 }
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
+    
+    NSString *token = [[deviceToken description] stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"<>"]];
+    __appDelegate.token = [token stringByReplacingOccurrencesOfString:@" " withString:@""];
+    NSLog(@"~~~~~~~~~~~~~ %@", __appDelegate.token);
+    
     [JPUSHService registerDeviceToken:deviceToken];
 }
+
+- (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings {
+    if (notificationSettings.types != UIUserNotificationTypeNone) {
+        [application registerForRemoteNotifications];
+    }
+}
+
+
 
 -(void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo{
     [JPUSHService handleRemoteNotification:userInfo];
@@ -58,22 +78,19 @@
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application {
-    //  [application setApplicationIconBadgeNumber:0];
-    //  [application cancelAllLocalNotifications];
 }
 
 - (void)applicationDidEnterBackground:(UIApplication *)application {
-    //  [[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
 }
 
 -(void)jpushNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(NSInteger))completionHandler{
-
+    
     NSMutableDictionary *userInfo = [NSMutableDictionary dictionaryWithDictionary:notification.request.content.userInfo];
-
+    
     [userInfo setValue:kJPushPluginiOS10ForegroundReceiveNotification forKey:@"JPushNotificationType"];
-
+    
     [[NSNotificationCenter defaultCenter] postNotificationName:kJPushPluginiOS10ForegroundReceiveNotification object:userInfo];
-
+    
     completionHandler(UNNotificationPresentationOptionBadge|UNNotificationPresentationOptionSound|UNNotificationPresentationOptionAlert);
 }
 
@@ -81,7 +98,7 @@
     NSMutableDictionary *userInfo = [NSMutableDictionary dictionaryWithDictionary:response.notification.request.content.userInfo];
     [userInfo setValue:kJPushPluginiOS10ClickNotification forKey:@"JPushNotificationType"];
     [[NSNotificationCenter defaultCenter] postNotificationName:kJPushPluginiOS10ClickNotification object:userInfo];
-
+    
     completionHandler();
 }
 

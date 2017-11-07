@@ -63,6 +63,7 @@
 
 //检查用户的推送设置情况
 -(void)getUserNotificationSettings:(CDVInvokedUrlCommand*)command;
++(void)registerForRemoteNotification;
 
 /*
  *  以下为js中可监听到的事件
