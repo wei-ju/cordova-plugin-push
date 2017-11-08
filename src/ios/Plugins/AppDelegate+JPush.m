@@ -49,7 +49,6 @@
     
     NSString *token = [[deviceToken description] stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"<>"]];
     __appDelegate.token = [token stringByReplacingOccurrencesOfString:@" " withString:@""];
-    NSLog(@"~~~~~~~~~~~~~ %@", __appDelegate.token);
     
     [JPUSHService registerDeviceToken:deviceToken];
 }

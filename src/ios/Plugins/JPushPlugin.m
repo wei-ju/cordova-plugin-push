@@ -71,18 +71,10 @@ static NSDictionary *_launchOptions = nil;
 
 
 -(void)initial:(CDVInvokedUrlCommand*)command{
-    NSLog(@"gangangangan...........  %@", __appDelegate.token);
-    //do nithng,because Cordova plugin use lazy load mode.
     
     CDVPluginResult* pluginResult = nil;
-    NSLog(@" %@..............echo %@", [JPUSHService registrationID], [self bodyDictionary]);
-    
-    
     
     NSString* echo = [[self bodyDictionary] toJsonString];
-    
- //   [self.commandDelegate evalJs:[NSString stringWithFormat:@"window.plugins.jPushPlugin.receiveMessage('%@')",echo]];
-    
     
     if (echo != nil && [echo length] > 0) {
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:echo];
@@ -131,8 +123,6 @@ static NSDictionary *_launchOptions = nil;
 #endif
 
 -(void)initNotifications {
-    NSLog(@"xxxx.........niima");
-    //return;
     NSNotificationCenter *defaultCenter = [NSNotificationCenter defaultCenter];
     [defaultCenter addObserver:self
                       selector:@selector(networkDidReceiveMessage:)
@@ -210,8 +200,6 @@ static NSDictionary *_launchOptions = nil;
     NSString* registrationID = [JPUSHService registrationID];
     self.cid = registrationID;
     NSLog(@"### getRegistrationID %@",registrationID);
-    // 1517bfd3f7ce65a3513
-    // 161a3797c80c4381660
     [self handleResultWithValue:registrationID command:command];
 }
 
@@ -360,10 +348,8 @@ static NSDictionary *_launchOptions = nil;
 
     [JPUSHService setDebugMode];
 
-    NSLog(@".......setLaunchOptions");
     [JPushPlugin registerForRemoteNotification];
 
-    //read appkey and channel from PushConfig.plist
     NSString *plistPath = [[NSBundle mainBundle] pathForResource:JPushConfigFileName ofType:@"plist"];
     if (plistPath == nil) {
         NSLog(@"error: PushConfig.plist not found");
@@ -465,8 +451,6 @@ static NSDictionary *_launchOptions = nil;
         case UIApplicationStateActive:{
             //前台收到
             dispatch_async(dispatch_get_main_queue(), ^{
-                NSLog(@"~~~~~~~~~~~~~~~~~~~~~ %@", jsonString);
-          //      [self.commandDelegate evalJs:[NSString stringWithFormat:@"cordova.fireDocumentEvent('jpush.receiveNotification',%@)",jsonString]];
                 [self.commandDelegate evalJs:[NSString stringWithFormat:@"window.plugins.jPushPlugin.receiveMessage(%@)",jsonString]];
             });
             break;
@@ -476,8 +460,6 @@ static NSDictionary *_launchOptions = nil;
             dispatch_async(dispatch_get_main_queue(), ^{
                 
                 [self.commandDelegate evalJs:[NSString stringWithFormat:@"window.plugins.jPushPlugin.receiveMessage(%@)",jsonString]];
-                
-          //      [self.commandDelegate evalJs:[NSString stringWithFormat:@"cordova.fireDocumentEvent('jpush.openNotification',%@)",jsonString]];
             });
             break;
         }
