@@ -220,8 +220,8 @@ public final class PushManager extends CordovaPlugin {
 
     public static void registerMiPush(Context context) {
 
-        String appId = getMateData(context).getString("xiaomi_appid");
-        String appKey = getMateData(context).getString("xiaomi_appkey");
+        String appId = getMateData(context).getString("xiaomi_appid").replace("mi","");
+        String appKey = getMateData(context).getString("xiaomi_appkey").replace("mi","");
         MiPushClient.checkManifest(context);
         MiPushClient.registerPush(context, appId, appKey);
     }

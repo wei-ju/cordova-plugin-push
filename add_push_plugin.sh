@@ -1,6 +1,6 @@
 #极光
 JPUSH_API_KEY="xxx"
-#小米
+#小米(id 与 key 加入前缀mi 因为纯数字情况下metadata会误认为float类型)
 XIAOMI_APP_ID="xxx"
 XIAOMI_APP_KEY="xxx"
 #DDPush
