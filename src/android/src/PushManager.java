@@ -28,6 +28,8 @@ import org.json.JSONException;
 
 import java.util.HashMap;
 import java.util.Map;
+import android.provider.Settings;
+import android.net.Uri;
 
 import cn.jpush.android.api.JPushInterface;
 
